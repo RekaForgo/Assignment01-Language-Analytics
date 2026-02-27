@@ -1,0 +1,8 @@
+pandas
+matplotlib
+seaborn
+nltk
+spacy
+scipy
+setuptools
+wheel

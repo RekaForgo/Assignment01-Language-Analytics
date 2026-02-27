@@ -1,0 +1,84 @@
+
+=== TTR (raw) ===
+                mean        sd
+genre                         
+FAIRY       0.647199  0.077906
+NOVEL-CONT  0.716331  0.063768
+
+=== TTR (lowercased, no stopwords/punct) ===
+                mean        sd
+genre                         
+FAIRY       0.875817  0.080315
+NOVEL-CONT  0.933940  0.059876
+
+=== Corpus Summary ===
+            n_texts  avg_characters  sd_characters  ...  total_tokens  corpus_types  corpus_TTR
+genre                                               ...                                        
+FAIRY           760      525.828947     249.316853  ...         35080          7371    0.210120
+NOVEL-CONT      799      377.052566     174.246835  ...         27127          8607    0.317285
+
+[2 rows x 10 columns]
+
+=== Sentences per Text ===
+                mean        sd
+genre                         
+FAIRY       5.001316  0.036274
+NOVEL-CONT  5.000000  0.000000
+
+=== Hapax Rate ===
+                mean        sd    n
+genre                              
+FAIRY       0.777524  0.133970  760
+NOVEL-CONT  0.876660  0.106836  799
+
+=== t-test: Hapax Rate (FAIRY vs NOVEL-CONT) ===
+  t = -16.1030,  p = 8.4270e-54,  Cohen's d = -0.8205
+
+=== Top 20 Tokens per Genre ===
+fairy_token  fairy_freq novel_token  novel_freq
+       said         508        said         256
+        one         305        like         194
+     little         239         one         191
+       went         223       would         180
+       king         203        back         161
+      would         195       could         137
+      could         186        time         113
+       came         185        know         102
+        old         165        even          93
+        man         163         get          93
+   princess         143      around          86
+        see         142         got          84
+     prince         140        eyes          79
+      great         139         see          79
+       like         139      looked          76
+        day         137          go          76
+       time         136         way          73
+         go         133        room          72
+        saw         130         say          70
+       come         125   something          69
+
+=== POS Proportions ===
+                NOUN      VERB       ADJ      PRON
+genre                                             
+FAIRY       0.169384  0.147254  0.057851  0.146229
+NOVEL-CONT  0.163919  0.162581  0.055613  0.172419
+
+=== NER Density (per 1000 tokens) ===
+                 mean         sd
+genre                           
+FAIRY       34.850485  33.007144
+NOVEL-CONT  46.290051  39.636080
+
+=== Function Word Proportion ===
+                mean        sd
+genre                         
+FAIRY       0.514787  0.059350
+NOVEL-CONT  0.496471  0.064251
+
+=== Sentiment (VADER compound) ===
+                mean        sd
+genre                         
+FAIRY       0.204915  0.672265
+NOVEL-CONT  0.092205  0.595625
+
+Done. All outputs saved to 'output/'
