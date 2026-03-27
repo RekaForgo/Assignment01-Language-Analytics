@@ -1,21 +1,30 @@
 
+=== MATTR (Window=20) ===
+                mean        sd
+genre                         
+FAIRY       0.932072  0.067589
+NOVEL-CONT  0.955554  0.051944
+
 === TTR (raw) ===
                 mean        sd
 genre                         
-FAIRY       0.647199  0.077906
-NOVEL-CONT  0.716331  0.063768
+FAIRY       0.647181  0.077934
+NOVEL-CONT  0.715616  0.063704
 
 === TTR (lowercased, no stopwords/punct) ===
                 mean        sd
 genre                         
-FAIRY       0.875817  0.080315
-NOVEL-CONT  0.933940  0.059876
+FAIRY       0.875803  0.080325
+NOVEL-CONT  0.933288  0.059885
+
+=== TTR vs Length Correlation ===
+Pearson r: -0.265, p-value: 1.907e-26
 
 === Corpus Summary ===
-            n_texts  avg_characters  sd_characters  ...  total_tokens  corpus_types  corpus_TTR
-genre                                               ...                                        
-FAIRY           760      525.828947     249.316853  ...         35080          7371    0.210120
-NOVEL-CONT      799      377.052566     174.246835  ...         27127          8607    0.317285
+            n_texts  avg_characters  sd_characters  ...  total_tokens  corpus_types  overall_TTR_of_genre
+genre                                               ...                                                  
+FAIRY           760      525.828947     249.316853  ...         35080          7368              0.210034
+NOVEL-CONT      799      377.052566     174.246835  ...         27119          8479              0.312659
 
 [2 rows x 10 columns]
 
@@ -28,34 +37,34 @@ NOVEL-CONT  5.000000  0.000000
 === Hapax Rate ===
                 mean        sd    n
 genre                              
-FAIRY       0.777524  0.133970  760
-NOVEL-CONT  0.876660  0.106836  799
+FAIRY       0.777510  0.133980  760
+NOVEL-CONT  0.875425  0.106862  799
 
 === t-test: Hapax Rate (FAIRY vs NOVEL-CONT) ===
-  t = -16.1030,  p = 8.4270e-54,  Cohen's d = -0.8205
+  t = -15.9025,  p = 1.3016e-52,  Cohen's d = -0.8103
 
 === Top 20 Tokens per Genre ===
 fairy_token  fairy_freq novel_token  novel_freq
-       said         508        said         256
-        one         305        like         194
+       said         508        said         257
+        one         305        like         195
      little         239         one         191
-       went         223       would         180
+       went         223       would         181
        king         203        back         161
       would         195       could         137
       could         186        time         113
        came         185        know         102
-        old         165        even          93
+        old         165        even          95
         man         163         get          93
    princess         143      around          86
         see         142         got          84
-     prince         140        eyes          79
-      great         139         see          79
+     prince         140         see          80
+      great         139        eyes          79
        like         139      looked          76
         day         137          go          76
        time         136         way          73
-         go         133        room          72
-        saw         130         say          70
-       come         125   something          69
+         go         133        room          73
+        saw         130   something          70
+       come         125         say          70
 
 === POS Proportions ===
                 NOUN      VERB       ADJ      PRON
@@ -74,6 +83,7 @@ NOVEL-CONT  46.290051  39.636080
 genre                         
 FAIRY       0.514787  0.059350
 NOVEL-CONT  0.496471  0.064251
+  t = 5.8505,  p = 5.9657e-09,  Cohen's d = 0.2958
 
 === Sentiment (VADER compound) ===
                 mean        sd

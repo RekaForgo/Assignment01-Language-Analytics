@@ -15,7 +15,7 @@ import seaborn as sns
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.sentiment import SentimentIntensityAnalyzer
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, pearsonr
 
 from utils import setup
 setup()
@@ -79,7 +79,29 @@ df["n_tokens"] = df["tokens"].apply(len)
 df["n_types"]  = df["tokens"].apply(lambda ts: len(set(ts)))
 df["TTR"]      = df["n_types"] / df["n_tokens"]
 
+def calculate_mattr(tokens, window_size=20):
+    """Calculates Moving-Average Type-Token Ratio to control for text length."""
+    if len(tokens) < window_size:
+        # Fallback for texts shorter than the window size
+        return len(set(tokens)) / len(tokens) if tokens else 0.0
+    
+    ttr_sum = 0
+    valid_windows = len(tokens) - window_size + 1
+    
+    for i in range(valid_windows):
+        window = tokens[i : i + window_size]
+        ttr_sum += len(set(window)) / window_size
+        
+    return ttr_sum / valid_windows
 
+# Apply MATTR to the cleaned tokens
+df["MATTR"] = df["tokens"].apply(lambda ts: calculate_mattr(ts, window_size=20))
+
+# Print and save MATTR stats
+mattr_stats = df.groupby("genre")["MATTR"].agg(mean="mean", sd="std")
+print("\n=== MATTR (Window=20) ===")
+print(mattr_stats)
+mattr_stats.to_csv(os.path.join(OUTPUT_DIR, "mattr_results.csv"))
 # Hapax rate
 
 def hapax_rate(tokens):
@@ -104,6 +126,19 @@ for col, label, fname in [
     save(fname)
 
 
+# 1. Calculate the correlation between number of tokens and TTR
+corr_r, corr_p = pearsonr(df["n_tokens"], df["TTR"])
+print(f"\n=== TTR vs Length Correlation ===")
+print(f"Pearson r: {corr_r:.3f}, p-value: {corr_p:.3e}")
+
+# 2. Plot the correlation to include in your report
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=df, x="n_tokens", y="TTR", hue="genre", alpha=0.6)
+plt.title("Correlation between Text Length and TTR")
+plt.xlabel("Number of Tokens (Cleaned)")
+plt.ylabel("Type-Token Ratio (TTR)")
+save("ttr_vs_length_scatter.png")
+
 # Corpus summary 
 summary = df.groupby("genre").agg(
     n_texts            = ("text", "count"),
@@ -121,8 +156,8 @@ corpus_types = (
       .apply(lambda texts: len(set(t for ts in texts for t in ts)))
 )
 
-summary["corpus_types"] = corpus_types
-summary["corpus_TTR"]   = summary["corpus_types"] / summary["total_tokens"]
+summary["corpus_types"]       = corpus_types
+summary["overall_TTR_of_genre"] = summary["corpus_types"] / summary["total_tokens"]
 
 print("\n=== Corpus Summary ===")
 print(summary)
@@ -151,16 +186,12 @@ sds   = df.groupby("genre")["hapax_rate"].std()
 ses   = sds / np.sqrt(df.groupby("genre")["hapax_rate"].count())
 x     = np.arange(len(means))
 
-plt.figure(figsize=(8, 5))
-plt.bar(x, means, alpha=0.6)
-plt.errorbar(x, means, yerr=sds, capsize=8, fmt='none', label="SD")
-plt.errorbar(x, means, yerr=ses, capsize=4, fmt='none', color="red", label="SE")
-plt.xticks(x, means.index)
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=df, x="genre", y="hapax_rate", palette="muted")
+plt.title("Hapax Rate Distribution by Genre")
 plt.ylabel("Hapax Rate")
-plt.title("Mean Hapax Rate per Genre")
-plt.legend()
-save("hapax_rate.png")
-
+plt.xlabel("Genre")
+save("hapax_rate_boxplot.png")
 
 # Statistical test: Hapax rate
 
@@ -277,6 +308,19 @@ try:
     df_fw["fw_percent"] = df_fw["fw_ratio"] * 100
     print("\n=== Function Word Proportion ===")
     print(fw_stats)
+    fw_stats.to_csv(os.path.join(OUTPUT_DIR, "function_word_proportion.csv"))
+
+    fairy_fw = df_fw.loc[df_fw["genre"] == "FAIRY",      "fw_ratio"]
+    novel_fw = df_fw.loc[df_fw["genre"] == "NOVEL-CONT", "fw_ratio"]
+    t_fw, p_fw = ttest_ind(fairy_fw, novel_fw, equal_var=False)
+    d_fw = cohens_d(fairy_fw, novel_fw)
+    print(f"  t = {t_fw:.4f},  p = {p_fw:.4e},  Cohen's d = {d_fw:.4f}")
+
+    sns.boxplot(data=df_fw, x="genre", y="fw_percent", palette="muted")
+    plt.title("Function Word Proportion by Genre")
+    plt.ylabel("Function Words (%)")
+    plt.xlabel("Genre")
+    save("function_word_proportion.png")
 
 except OSError:
     print("\n[SpaCy] Model 'en_core_web_sm' not found — skipping POS/NER.")
